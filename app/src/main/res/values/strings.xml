@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">ThiefFaceDetector</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_email">Enter email</string>
+    <string name="enter_phone_number">Enter phone number</string>
+    <string name="enter_password">Enter password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="view_details">View details</string>
+    <string name="prompt_email">Enter email</string>
+    <string name="prompt_password">Enter password</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="enter_mobile_number">Enter mobile number</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_pan_card_number">Enter pan card number</string>
+    <string name="enter_uid_number">Enter UID number</string>
+    <string name="enter_dob_in_dd_mm_yyyy">Enter dob in DD/MM/YYYY</string>
+    <string name="select_your_avatar">Select your avatar</string>
+    <string name="register">Register</string>
+</resources>
