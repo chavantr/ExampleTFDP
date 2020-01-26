@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import kotlinx.android.synthetic.main.activity_registration.*
@@ -55,6 +56,10 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
 
         imgPhoto.setOnClickListener {
             showMenu(it)
+        }
+
+        btnRegister.setOnClickListener {
+            Toast.makeText(this@RegistrationActivity, "Processing image for verification", Toast.LENGTH_LONG).show()
         }
     }
 
