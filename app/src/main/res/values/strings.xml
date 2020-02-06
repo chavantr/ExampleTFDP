@@ -19,4 +19,7 @@
     <string name="register">Register</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
+    <string name="congratulations_n_you_have_successfully_registered">Congratulations You have successfully
+        registered.
+    </string>
 </resources>

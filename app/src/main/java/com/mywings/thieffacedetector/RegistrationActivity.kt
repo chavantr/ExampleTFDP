@@ -5,24 +5,33 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.view.MenuItem
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.mywings.newtwitterapp.process.OnRegistrationListener
+import com.mywings.thieffacedetector.process.ProgressDialogUtil
+import com.mywings.thieffacedetector.process.RegistrationAsync
 import kotlinx.android.synthetic.main.activity_registration.*
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.util.*
 
-class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener {
+class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener, OnRegistrationListener {
 
+    private lateinit var progressDialogUtil: ProgressDialogUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
-
+        progressDialogUtil = ProgressDialogUtil(this)
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (ActivityCompat.checkSelfPermission(
                     this,
@@ -59,9 +68,20 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
         }
 
         btnRegister.setOnClickListener {
-            Toast.makeText(this@RegistrationActivity, "Processing image for verification", Toast.LENGTH_LONG).show()
+            if (validate()) {
+                init()
+            } else {
+                Toast.makeText(this, "Please fill mandatory fields", Toast.LENGTH_LONG).show()
+            }
         }
     }
+
+    private fun validate(): Boolean = !txtName.text.isNullOrEmpty()
+            && !txtPhone.text.isNullOrEmpty()
+            && !txtPanCard.text.isNullOrEmpty()
+            && !txtUID.text.isNullOrEmpty()
+            && !txtDob.text.isNullOrEmpty()
+            && imgPhoto.drawable != null
 
     private fun showMenu(v: View) {
         PopupMenu(this, v).apply {
@@ -97,6 +117,25 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
         startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST)
     }
 
+    private fun init() {
+        progressDialogUtil.show()
+        val registrationAsync = RegistrationAsync()
+        val request = JSONObject()
+        val params = JSONObject()
+        params.put("name", txtName.text)
+        params.put("phone", txtPhone.text)
+        params.put("pancard", txtPanCard.text)
+        params.put("uid", txtUID.text)
+        params.put("dob", txtDob.text)
+        val image = (imgPhoto.drawable as BitmapDrawable).bitmap
+        val stream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val imgFinal = stream.toByteArray()
+        params.put("image", Base64.encodeToString(imgFinal, Base64.DEFAULT))
+        request.put("request", params)
+        registrationAsync.setOnRegistrationListener(this, request)
+    }
+
     companion object {
         const val PERMISSION = 1001
         const val CAMERA_PIC_REQUEST = 1002
@@ -119,6 +158,17 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
                     }
                 }
             }
+        }
+    }
+
+    override fun onRegistrationSuccess(success: Int?) {
+        progressDialogUtil.hide()
+        if (success != null && success > 0) {
+            val intent = Intent(this@RegistrationActivity, SuccessActivity::class.java)
+            startActivity(intent)
+            Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(this, "You will not allow to do registration", Toast.LENGTH_LONG).show()
         }
     }
 }

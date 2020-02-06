@@ -2,9 +2,7 @@ package com.mywings.newtwitterapp.process
 
 object HttpConstants {
 
-    const val URL = "http://globemindstechnologies.com/MyRestService.svc/"
-    //const val LOAD_DATA = "GetTwitterComments"
-    const val LOGIN = ""
-    const val REGISTER = ""
-
+    const val URL = "http://192.168.43.157:8080/"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
 }
