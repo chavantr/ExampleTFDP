@@ -133,7 +133,7 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
         val imgFinal = stream.toByteArray()
         params.put("image", Base64.encodeToString(imgFinal, Base64.DEFAULT))
         request.put("request", params)
-        registrationAsync.setOnRegistrationListener(this, request)
+        registrationAsync.setOnRegistrationListener(this, params)
     }
 
     companion object {
