@@ -15,8 +15,15 @@
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp">
 
+
+        <ImageView android:layout_width="250dp" android:layout_marginTop="16dp"
+                   android:layout_gravity="center_horizontal" android:src="@drawable/img"
+                   android:layout_height="250dp" android:layout_marginBottom="16dp"/>
+
+
         <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
+                android:visibility="gone"
                 android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -32,6 +39,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
+                android:visibility="gone"
                 android:layout_height="wrap_content">
 
             <EditText
@@ -53,9 +61,16 @@
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginTop="32dp"
                 android:text="@string/action_sign_in"
                 android:textStyle="bold"/>
+
+        <TextView android:layout_width="match_parent"
+                  android:textStyle="bold" android:gravity="center"
+                  android:text="@string/person_verification"
+                  android:textColor="@color/colorAccent"
+                  android:layout_height="wrap_content"/>
 
         <Button
                 android:id="@+id/btnSignUp"

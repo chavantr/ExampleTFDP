@@ -5,7 +5,7 @@
     <string name="enter_phone_number">Enter phone number</string>
     <string name="enter_password">Enter password</string>
     <string name="confirm_password">Confirm password</string>
-    <string name="sign_up">Sign Up</string>
+    <string name="sign_up">Registration</string>
     <string name="view_details">View details</string>
     <string name="prompt_email">Enter email</string>
     <string name="prompt_password">Enter password</string>
@@ -19,7 +19,8 @@
     <string name="register">Register</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
-    <string name="congratulations_n_you_have_successfully_registered">Congratulations You have successfully
-        registered.
+    <string name="congratulations_n_you_have_successfully_registered">
+        YOU ARE A LEGAL PERSON
     </string>
+    <string name="person_verification">PERSON VERIFICATION</string>
 </resources>

@@ -7,16 +7,19 @@ import android.widget.Toast
 import com.mywings.newtwitterapp.process.LoginAsync
 import com.mywings.newtwitterapp.process.OnLoginListener
 import com.mywings.thieffacedetector.model.User
+import com.mywings.thieffacedetector.process.OnLocationProviderListener
 import com.mywings.thieffacedetector.process.ProgressDialogUtil
+import com.mywings.thieffacedetector.process.ValidateLocation
 import kotlinx.android.synthetic.main.activity_login.*
 
 
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity(), OnLoginListener {
+class MainActivity : AppCompatActivity(), OnLoginListener, OnLocationProviderListener {
 
 
     private lateinit var progressDialogUtil: ProgressDialogUtil
+    private var location: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +34,18 @@ class MainActivity : AppCompatActivity(), OnLoginListener {
         }
 
         btnSignUp.setOnClickListener {
-            val intent = Intent(this@MainActivity, RegistrationActivity::class.java)
-            startActivity(intent)
+            if (validate()) {
+                val intent = Intent(this@MainActivity, RegistrationActivity::class.java)
+                intent.putExtra("location", location)
+                startActivity(intent)
+            }
         }
+        locationFinder()
+    }
+
+    private fun locationFinder() {
+        val locationUtil = ValidateLocation()
+        locationUtil.setLocationListener(this)
     }
 
     private fun initLogin() {
@@ -47,10 +59,14 @@ class MainActivity : AppCompatActivity(), OnLoginListener {
         loginAsync.setOnLoginListener(this, request)
     }
 
-    private fun validate(): Boolean = !txtUsername.text.isNullOrEmpty() && !txtPassword.text.isNullOrEmpty()
+    private fun validate(): Boolean = location
 
     override fun onLoginSuccess(user: User?) {
 
+    }
+
+    override fun onLocationSuccess(result: Boolean?) {
+        location = result!!
     }
 
 }

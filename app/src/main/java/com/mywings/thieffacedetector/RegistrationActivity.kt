@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -22,15 +23,22 @@ import com.mywings.thieffacedetector.process.RegistrationAsync
 import kotlinx.android.synthetic.main.activity_registration.*
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.util.*
 
 class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener, OnRegistrationListener {
 
     private lateinit var progressDialogUtil: ProgressDialogUtil
 
+    private lateinit var latitude: String
+    private lateinit var longitude: String
+
+    private var locationManager: LocationManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_registration)
+        if (!intent?.extras?.getBoolean("location")!!) {
+            return
+        }
         progressDialogUtil = ProgressDialogUtil(this)
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (ActivityCompat.checkSelfPermission(
@@ -42,6 +50,9 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
                 ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
 
@@ -52,7 +63,8 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
                         arrayOf(
                             Manifest.permission.CAMERA,
                             Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.ACCESS_FINE_LOCATION
                         ),
                         PERMISSION
                     )
@@ -62,6 +74,9 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
 
             }
         }
+
+        latitude = "18.538811"
+        longitude = "73.831981"
 
         imgPhoto.setOnClickListener {
             showMenu(it)
@@ -127,6 +142,8 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
         params.put("pancard", txtPanCard.text)
         params.put("uid", txtUID.text)
         params.put("dob", txtDob.text)
+        params.put("latitude", latitude)
+        params.put("longitude", longitude)
         val image = (imgPhoto.drawable as BitmapDrawable).bitmap
         val stream = ByteArrayOutputStream()
         image.compress(Bitmap.CompressFormat.PNG, 100, stream)
@@ -140,6 +157,7 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
         const val PERMISSION = 1001
         const val CAMERA_PIC_REQUEST = 1002
         const val SELECT_IMAGE = 1003
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -163,12 +181,12 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
 
     override fun onRegistrationSuccess(success: Int?) {
         progressDialogUtil.hide()
-        if (success != null && success > 0) {
+        if (success != null && success <= 0) {
             val intent = Intent(this@RegistrationActivity, SuccessActivity::class.java)
             startActivity(intent)
             Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(this, "You will not allow to do registration", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "YOR ARE NOT LEGAL PERSON", Toast.LENGTH_LONG).show()
         }
     }
 }

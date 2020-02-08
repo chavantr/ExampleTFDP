@@ -26,6 +26,7 @@ class RegistrationAsync : AsyncTask<JSONObject, Void, Int?>() {
     }
 
     fun setOnRegistrationListener(onRegistrationListener: OnRegistrationListener, request: JSONObject) {
+        this.onRegistrationListener = onRegistrationListener
         super.executeOnExecutor(THREAD_POOL_EXECUTOR, request)
     }
 }
