@@ -48,6 +48,7 @@
                     android:id="@+id/txtPanCard"
                     android:hint="@string/enter_pan_card_number"
                     android:layout_width="match_parent"
+                    android:maxLength="10"
                     android:layout_marginTop="16dp"
                     android:layout_height="wrap_content"/>
 

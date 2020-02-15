@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.location.LocationManager
 import android.os.Build
@@ -18,13 +19,17 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.mywings.newtwitterapp.process.OnRegistrationListener
+import com.mywings.newtwitterapp.process.OnUpdateCriminalListener
 import com.mywings.thieffacedetector.process.ProgressDialogUtil
 import com.mywings.thieffacedetector.process.RegistrationAsync
+import com.mywings.thieffacedetector.process.UpdateCriminalAsync
 import kotlinx.android.synthetic.main.activity_registration.*
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 
-class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener, OnRegistrationListener {
+class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener, OnRegistrationListener,
+    OnUpdateCriminalListener {
+
 
     private lateinit var progressDialogUtil: ProgressDialogUtil
 
@@ -153,6 +158,28 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
         registrationAsync.setOnRegistrationListener(this, params)
     }
 
+
+    private fun initUpdate() {
+        //progressDialogUtil.show()
+        val registrationAsync = UpdateCriminalAsync()
+        val request = JSONObject()
+        val params = JSONObject()
+        params.put("name", txtName.text)
+        params.put("phone", txtPhone.text)
+        params.put("pancard", txtPanCard.text)
+        params.put("uid", txtUID.text)
+        params.put("dob", txtDob.text)
+        params.put("latitude", latitude)
+        params.put("longitude", longitude)
+        val image = (imgPhoto.drawable as BitmapDrawable).bitmap
+        val stream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val imgFinal = stream.toByteArray()
+        params.put("image", Base64.encodeToString(imgFinal, Base64.DEFAULT))
+        request.put("request", params)
+        registrationAsync.setOnUpdateListener(this, request)
+    }
+
     companion object {
         const val PERMISSION = 1001
         const val CAMERA_PIC_REQUEST = 1002
@@ -167,12 +194,16 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
                 when (requestCode) {
                     CAMERA_PIC_REQUEST -> {
                         val image = data!!.extras?.get("data") as Bitmap
-                        imgPhoto.setImageBitmap(image)
+                        val resized = Bitmap.createScaledBitmap(image, 150, 150, true)
+                        imgPhoto.setImageBitmap(resized)
+                        //imgPhoto.setImageBitmap(convertGreyScale(resized))
                     }
                     SELECT_IMAGE -> {
                         val image =
                             MediaStore.Images.Media.getBitmap(contentResolver, data?.data)
-                        imgPhoto.setImageBitmap(image)
+                        val resized = Bitmap.createScaledBitmap(image, 150, 150, true)
+                        imgPhoto.setImageBitmap(resized)
+                        //imgPhoto.setImageBitmap(convertGreyScale(resized))
                     }
                 }
             }
@@ -180,13 +211,51 @@ class RegistrationActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListe
     }
 
     override fun onRegistrationSuccess(success: Int?) {
-        progressDialogUtil.hide()
         if (success != null && success <= 0) {
+            progressDialogUtil.hide()
             val intent = Intent(this@RegistrationActivity, SuccessActivity::class.java)
             startActivity(intent)
             Toast.makeText(this, "Registration successful", Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(this, "YOR ARE NOT LEGAL PERSON", Toast.LENGTH_LONG).show()
+            initUpdate()
         }
+    }
+
+    fun convertGreyScale(src: Bitmap): Bitmap {
+        val width = src.width
+        val height = src.height
+        // create output bitmap
+        val bmOut = Bitmap.createBitmap(width, height, src.config)
+        // color information
+        var A: Int
+        var R: Int
+        var G: Int
+        var B: Int
+        var pixel: Int
+        for (x in 0 until width) {
+            for (y in 0 until height) {
+                // get pixel color
+                pixel = src.getPixel(x, y)
+                A = Color.alpha(pixel)
+                R = Color.red(pixel)
+                G = Color.green(pixel)
+                B = Color.blue(pixel)
+                var gray = (0.2989 * R + 0.5870 * G + 0.1140 * B).toInt()
+                // use 128 as threshold, above -> white, below -> black
+                if (gray > 128) {
+                    gray = 255
+                } else {
+                    gray = 0
+                }
+                // set new pixel color to output bitmap
+                bmOut.setPixel(x, y, Color.argb(A, gray, gray, gray))
+            }
+        }
+        return bmOut
+    }
+
+    override fun onUpdateSuccess(success: Int?) {
+        progressDialogUtil.hide()
+        Toast.makeText(this, "YOR ARE NOT LEGAL PERSON", Toast.LENGTH_LONG).show()
     }
 }

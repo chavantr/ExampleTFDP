@@ -8,4 +8,5 @@ object HttpConstants {
     const val LOCATION_UTIL = "EstablishConnection"
     const val LOCATION_URL = "http://globemindstechnologies.com/MyRestService.svc/"
     const val LOCATION_NAME = "ExampleTDSE"
+    const val FACE_DETECT = "FaceDetect"
 }
